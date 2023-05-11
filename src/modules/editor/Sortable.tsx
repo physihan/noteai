@@ -1,127 +1,73 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
-type Props = {
-  index: number;
+interface SortableItemProps {
   children: React.ReactNode;
-};
+  id: number;
+}
+export function SortableItem({ children, id }: SortableItemProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
-type SortableContextProps = {
-  draggingIndex: number;
-  handleDragStart: (index: number) => void;
-  handleDragEnter: (event: React.DragEvent<HTMLDivElement>, index: number) => void;
-  handleDragEnd: () => void;
-};
-
-const SortableContext = React.createContext<SortableContextProps>({
-  draggingIndex: -1,
-  handleDragStart: () => {},
-  handleDragEnter: () => {},
-  handleDragEnd: () => {},
-});
-
-const SortableItem = ({ index, children }: Props) => {
-  const { draggingIndex, handleDragStart, handleDragEnter, handleDragEnd } =
-    useContext(SortableContext);
-  const [isDragging, setIsDragging] = useState(false);
-  const itemRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (draggingIndex !== -1 && draggingIndex !== index) {
-      const currentItem = itemRef.current;
-
-      if (currentItem) {
-        currentItem.classList.add("opacity-50", "-translate-y-1/2");
-      }
-    } else if (isDragging === false) {
-      const currentItem = itemRef.current;
-
-      if (currentItem) {
-        currentItem.classList.remove("opacity-50", "-translate-y-1/2");
-      }
-    }
-  }, [draggingIndex, index, isDragging]);
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <div
-      ref={itemRef}
-      draggable={true}
-      onDragStart={() => {
-        setIsDragging(true);
-        handleDragStart(index);
-      }}
-      onDragEnter={(event) => handleDragEnter(event, index)}
-      onDragEnd={() => {
-        setIsDragging(false);
-        handleDragEnd();
-      }}
-      className={`p-4 border ${
-        isDragging && index !== draggingIndex ? "opacity-0 h-0" : ""
-      }`}
-    >
+    <div ref={setNodeRef} style={style} className="group/vis">
+      {/* ... */}
+      <span {...attributes} {...listeners} className="absolute hidden left-0 group-hover/vis:block">
+        drag
+      </span>
+      <Icon name="react" className=""></Icon>
       {children}
     </div>
   );
-};
+}
+import React, { useState } from "react";
+import Icon from "../../components/Icon";
 
-type SortableListProps = {
-  items: string[];
-  onUpdateItems: (newItems: string[]) => void;
-};
-
-const SortableList = ({ items, onUpdateItems }: SortableListProps) => {
-  const [draggingIndex, setDraggingIndex] = useState(-1);
-
-  const handleDragStart = (index: number) => {
-    setDraggingIndex(index);
-  };
-
-  const handleDragEnter = (
-    event: React.DragEvent<HTMLDivElement>,
-    index: number
-  ) => {
-    event.preventDefault();
-
-    if (draggingIndex === index) {
-      return;
-    }
-
-
-    setDraggingIndex(index);
-  };
-
-  const handleDragEnd = () => {
-    
-    const newItems = [...items];
-    const [removed] = newItems.splice(draggingIndex, 1);
-    newItems.splice(draggingIndex, 0, removed);
-
-    onUpdateItems(newItems);
-    setDraggingIndex(-1);
-  };
-
-  const contextValue = {
-    draggingIndex,
-    handleDragStart,
-    handleDragEnter,
-    handleDragEnd,
-  };
+interface SortableListProps {
+  children: React.ReactNode;
+}
+export function SortableList({ children }: SortableListProps) {
+  const [items, setItems] = useState(() => {
+    return React.Children.toArray(children).map((child, index) => ({ id: child.props.id, child }));
+  });
+  console.log(items);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
-    <SortableContext.Provider value={contextValue}>
-      <div className="divide-y">
-        {items.map((text, index) => (
-          <SortableItem key={`item-${index}`} index={index}>
-            {text}
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {items.map(({ id, child }, index) => (
+          <SortableItem key={id} id={id}>
+            {child}
           </SortableItem>
         ))}
-      </div>
-    </SortableContext.Provider>
+      </SortableContext>
+    </DndContext>
   );
-};
 
-const Sortable = {
-  List: SortableList,
-  Item: SortableItem,
-};
+  function handleDragEnd(event) {
+    const { active, over } = event;
 
-export default Sortable;
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const ids = items.map(({ id }) => id);
+        const oldIndex = ids.indexOf(active.id);
+        const newIndex = ids.indexOf(over.id);
+        console.log(oldIndex, newIndex);
+        console.log(arrayMove(items, oldIndex, newIndex));
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
+}

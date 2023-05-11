@@ -3,12 +3,13 @@ import { useEditorContext } from "./useEditorContext";
 
 interface BlockProps {
   content: string;
+  id: any;
 }
 
-const Block: React.FC<BlockProps> = ({ content }) => {
+const Block: React.FC<BlockProps> = ({ content, id }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editContent, setEditContent] = useState(content);
- const { paragraphs, addParagraph, updateParagraphContent } = useEditorContext();
+  const { paragraphs, addParagraph, updateParagraphContent } = useEditorContext();
   const handleSave = (e: React.FocusEvent<HTMLParagraphElement>) => {
     console.log("保存:", e.target.textContent);
     setIsEdit(false);

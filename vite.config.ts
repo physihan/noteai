@@ -2,8 +2,17 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import UnoCSS from "unocss/vite";
 // https://vitejs.dev/config/
+import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
+import path from "path";
 export default defineConfig(async () => ({
-  plugins: [UnoCSS(),react()],
+  plugins: [
+    UnoCSS(),
+    react(),
+    createSvgIconsPlugin({
+      iconDirs: [path.resolve(__dirname, "src/assets/icons")],
+      symbolId:'icon-[name]'
+    }),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
