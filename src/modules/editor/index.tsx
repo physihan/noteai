@@ -8,7 +8,7 @@ const Editor: React.FC = () => {
   const { paragraphs, addParagraph, updateParagraphContent } = useEditorContext();
 
   return (
-    <div>
+    <div className="m-auto w-auto">
       <SortableList>
         {paragraphs.map((paragraph) => (
           <Block key={paragraph.id} id={ paragraph.id} content={paragraph.content} onChange={(value) => updateParagraphContent(paragraph.id, value)} />

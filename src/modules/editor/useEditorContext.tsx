@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 interface Paragraph {
   id: number;
@@ -6,8 +6,26 @@ interface Paragraph {
   createdAt: Date;
   updatedAt: Date;
 }
-interface EditorContextValue {
+
+type State = {
   paragraphs: Paragraph[];
+};
+
+type Action =
+  | {
+      type: "ADD_PARAGRAPH";
+      payload: Paragraph;
+    }
+  | {
+      type: "UPDATE_PARAGRAPH_CONTENT";
+      payload: {
+        id: number;
+        content: string;
+        updatedAt: Date;
+      };
+    };
+
+interface EditorContextValue extends State {
   addParagraph: () => void;
   updateParagraphContent: (id: number, content: string) => void;
 }
@@ -20,39 +38,61 @@ const EditorContext = createContext<EditorContextValue>({
 
 export const useEditorContext = () => useContext(EditorContext);
 
+const editorReducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "ADD_PARAGRAPH":
+      return {
+        ...state,
+        paragraphs: [...state.paragraphs, action.payload],
+      };
+    case "UPDATE_PARAGRAPH_CONTENT":
+      return {
+        ...state,
+        paragraphs: state.paragraphs.map((p) => (p.id === action.payload.id ? { ...p, ...action.payload } : p)),
+      };
+    default:
+      return state;
+  }
+};
+
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [paragraphs, setParagraphs] = useState<Paragraph[]>([
-    {
-      id: 1,
-      content: "这是第一段。",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      id: 2,
-      content: "这是第二段。",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ]);
+  const [state, dispatch] = useReducer(editorReducer, {
+    paragraphs: [
+      {
+        id: 1,
+        content: "这是第一段。",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 2,
+        content: "这是第二段。",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+  });
 
   const addParagraph = () => {
-    const newId = paragraphs.length + 1;
+    const newId = state.paragraphs.length + 1;
     const newParagraph: Paragraph = {
       id: newId,
       content: "",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    setParagraphs([...paragraphs, newParagraph]);
+    dispatch({ type: "ADD_PARAGRAPH", payload: newParagraph });
   };
 
   const updateParagraphContent = (id: number, content: string) => {
-    setParagraphs(paragraphs.map((p) => (p.id === id ? { ...p, content, updatedAt: new Date() } : p)));
+    dispatch({
+      type: "UPDATE_PARAGRAPH_CONTENT",
+      payload: { id, content, updatedAt: new Date() },
+    });
   };
 
   const contextValue: EditorContextValue = {
-    paragraphs,
+    ...state,
     addParagraph,
     updateParagraphContent,
   };

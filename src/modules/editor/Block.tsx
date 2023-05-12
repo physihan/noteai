@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useEditorContext } from "./useEditorContext";
+import Dropdown from "../../components/Dropdown";
+import { MyPopover } from "../../components/Popover";
 
 interface BlockProps {
   content: string;
@@ -16,16 +18,29 @@ const Block: React.FC<BlockProps> = ({ content, id }) => {
   };
 
   return (
-    <p
-      className={`text-2xl text-gray-700 mb-2 cursor-${isEdit ? "text" : "pointer"} ${isEdit ? "" : "hover:underline"}`}
-      onClick={() => setIsEdit(true)}
-      contentEditable={isEdit}
-      suppressContentEditableWarning
-      onBlur={handleSave}
-      onInput={(e) => setEditContent(e.currentTarget.textContent || "")}
-    >
-      {isEdit ? editContent : content}
-    </p>
+    <>
+      <p
+        className={`text-2xl w-80  text-left  text-gray-700 mb-2 cursor-${isEdit ? "text" : "pointer"} ${isEdit ? "" : "hover:underline"}`}
+        onClick={(e) => {
+          setIsEdit(true);
+          console.log(e);
+        }}
+        tabIndex={-1}
+        contentEditable={isEdit}
+        suppressContentEditableWarning
+        // onBlur={handleSave}
+        onInput={(e) => setEditContent(e.currentTarget.textContent || "")}
+      >
+        {<MyPopover></MyPopover>}
+        {/* {isEdit && (
+          <div className="absolute top--20">
+            我是编辑器<Dropdown></Dropdown>
+          </div>
+        )} */}
+
+        {isEdit ? editContent : content}
+      </p>
+    </>
   );
 };
 

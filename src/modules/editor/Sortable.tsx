@@ -16,12 +16,11 @@ export function SortableItem({ children, id }: SortableItemProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="group/vis">
+    <div ref={setNodeRef} style={style} className="group/vis relative pl-10">
       {/* ... */}
-      <span {...attributes} {...listeners} className="absolute hidden left-0 group-hover/vis:block">
-        drag
+      <span {...attributes} {...listeners} className="absolute hidden left-0 group-hover/vis:block cursor">
+        <Icon name="react" className="cursor-pointer hover:text-red"></Icon>
       </span>
-      <Icon name="react" className=""></Icon>
       {children}
     </div>
   );
