@@ -5,8 +5,7 @@ import "./styles.css";
 // main.ts
 import "virtual:uno.css";
 import "virtual:svg-icons-register";
+import '@unocss/reset/normalize.css'
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>
 );

@@ -9,7 +9,7 @@ interface SortableItemProps {
 }
 export function SortableItem({ children, id }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-
+console.log('child')
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -19,7 +19,7 @@ export function SortableItem({ children, id }: SortableItemProps) {
     <div ref={setNodeRef} style={style} className="group/vis relative pl-10">
       {/* ... */}
       <span {...attributes} {...listeners} className="absolute hidden left-0 group-hover/vis:block cursor">
-        <Icon name="react" className="cursor-pointer hover:text-red"></Icon>
+        <Icon name="drag" className="cursor-move hover:text-red"></Icon>
       </span>
       {children}
     </div>
@@ -32,6 +32,7 @@ interface SortableListProps {
   children: React.ReactNode;
 }
 export function SortableList({ children }: SortableListProps) {
+  
   const [items, setItems] = useState(() => {
     return React.Children.toArray(children).map((child, index) => ({ id: child.props.id, child }));
   });

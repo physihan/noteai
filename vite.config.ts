@@ -10,7 +10,8 @@ export default defineConfig(async () => ({
     react(),
     createSvgIconsPlugin({
       iconDirs: [path.resolve(__dirname, "src/assets/icons")],
-      symbolId:'icon-[name]'
+      symbolId:'icon-[name]',
+      
     }),
   ],
 
