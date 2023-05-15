@@ -12,15 +12,19 @@
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
+    "@emotion/css": "^11.11.0",
     "@fluentui/react-context-selector": "^9.1.19",
     "@headlessui/react": "^1.7.14",
     "@tauri-apps/api": "^1.3.0",
     "@unocss/reset": "^0.51.12",
+    "doc-editor-light": "^0.3.5",
     "immer": "^10.0.2",
+    "less": "^4.1.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.0.5",
-    "use-context-selector": "^1.4.1",
+    "slate": "^0.94.1",
+    "slate-history": "^0.93.0",
+    "slate-react": "^0.94.2",
     "zustand": "^4.3.8"
   },
   "devDependencies": {

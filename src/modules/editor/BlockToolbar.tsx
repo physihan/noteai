@@ -19,12 +19,21 @@ function Toolbar() {
   const [selectedFontSize, setSelectedFontSize] = useState(fontSizes[1]);
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   // const { dispatch } = useEditorContext();
-  console.log('toolbar')
+  console.log("toolbar");
   return (
     <div
-      className="flex items-center space-x-4 bg-gray-200 p-2 rounded-md shadow-md"
+      className="flex items-center space-x-4 bg-gray-200 p-2 rounded-md shadow-md editor-toolbar"
       onBlur={() => {
         // dispatch({ type: "SET_ACTIVE_PARAGRAPH", payload: -1 });
+      }}
+      tabIndex={-1}
+      onFocus={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+      onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
       }}
     >
       <span className="font-medium text-gray-700">字号：</span>

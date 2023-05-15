@@ -20,6 +20,13 @@ const Block: React.FC<BlockProps> = ({ content, id, isEdit, index }) => {
   // const [editContent, setEditContent] = useState(content);
   // const { paragraphs, addParagraph, updateParagraphContent, activeParagraphId, dispatch } = useEditorContext();
   const handleSave = (e: React.FocusEvent<HTMLParagraphElement>) => {
+    console.log(e.relatedTarget);
+    if(e.relatedTarget&&e.relatedTarget instanceof HTMLElement&&e.relatedTarget.classList.contains("editor-toolbar")) {
+      
+    }else{
+
+      setActiveParagraphId(-1)
+    }
     console.log("保存:", e.target);
   };
   const ref = React.useRef(null);
@@ -38,7 +45,7 @@ const Block: React.FC<BlockProps> = ({ content, id, isEdit, index }) => {
         contentEditable={isEdit}
         suppressContentEditableWarning
         onBlur={handleSave}
-        onInput={(e) => setParagraphsContentByIndex(index, e.target.textContent || "")}
+        // onInput={(e) => setParagraphsContentByIndex(index, e.target.textContent || "")}
       >
         {isEdit && (
           <Pop message="sss" node={ref}>
@@ -57,4 +64,4 @@ const Block: React.FC<BlockProps> = ({ content, id, isEdit, index }) => {
   );
 };
 
-export default Block;
+export default memo(Block);

@@ -31,6 +31,18 @@ const initialState: EditorState = {
       createdAt: new Date(),
       updatedAt: new Date(),
     },
+    {
+      id: 3,
+      content: "这是第三段。",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+    {
+      id: 4,
+      content: "这是第四段。",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   ],
   activeParagraphId: -1,
 };

@@ -9,7 +9,7 @@ interface SortableItemProps {
 }
 export function SortableItem({ children, id }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-console.log('child')
+  console.log("child");
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -25,17 +25,34 @@ console.log('child')
     </div>
   );
 }
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Icon from "../../components/Icon";
+import { shallowEqual } from "../../utils/object";
 
 interface SortableListProps {
   children: React.ReactNode;
 }
 export function SortableList({ children }: SortableListProps) {
-  
   const [items, setItems] = useState(() => {
     return React.Children.toArray(children).map((child, index) => ({ id: child.props.id, child }));
   });
+  useEffect(() => {
+    setItems((items) => {
+      const childMap = React.Children.toArray(children).reduce((acc, child) => {
+        acc[child.props.id] = child;
+        return acc;
+      }, {});
+      // return items.map((item) => {
+      //   if (shallowEqual(childMap[item.id]?.props, item.child?.props)) {
+      //     return item;
+      //   }
+      //   return { ...item, child: childMap[item.id] };
+      // });
+      return items.map((item) => {
+        return { ...item, child: childMap[item.id] };
+      });
+    });
+  }, [children]);
   console.log(items);
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -47,11 +64,14 @@ export function SortableList({ children }: SortableListProps) {
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map(({ id, child }, index) => (
-          <SortableItem key={id} id={id}>
-            {child}
-          </SortableItem>
-        ))}
+        {items.map(({ id, child }, index) => {
+          console.log(child, index);
+          return (
+            <SortableItem key={id} id={id}>
+              {child}
+            </SortableItem>
+          );
+        })}
       </SortableContext>
     </DndContext>
   );
